@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "jwt.signerKey",
+      "type": "java.lang.String",
+      "description": "Secret key used for signing and verifying JWT tokens."
+    }
+  ]
+}

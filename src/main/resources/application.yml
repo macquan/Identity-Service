@@ -1,0 +1,26 @@
+spring:
+    application:
+        name: identity-service
+    output:
+        ansi:
+            enabled: ALWAYS
+    datasource:
+        url: "jdbc:mysql://localhost:3307/identity_service"
+        username: root
+        password: root
+    jpa:
+        hibernate:
+            ddl-auto: update # Giúp Hibernate tự động tạo hoặc cập nhật các bảng trong cơ sở dữ liệu dựa trên các thực thể JPA của bạn. Khi bạn đặt giá trị này là "update", Hibernate sẽ kiểm tra các thay đổi trong các thực thể và áp dụng chúng vào cơ sở dữ liệu mà không làm mất dữ liệu hiện có. Tuy nhiên, hãy cẩn thận khi sử dụng tùy chọn này trong môi trường sản xuất, vì nó có thể gây ra những thay đổi không mong muốn nếu không được quản lý đúng cách.
+        show-sql: true
+
+server:
+    port: 8080
+    servlet:
+        context-path: /identity # Giúp Spring Boot nhận biết rằng ứng dụng này sẽ được triển khai trên một đường dẫn cụ thể, thay vì chạy trực tiếp trên cổng gốc. Điều này hữu ích khi bạn muốn triển khai nhiều ứng dụng trên cùng một máy chủ hoặc khi bạn muốn tổ chức các dịch vụ của mình theo các đường dẫn khác nhau.
+
+logging:
+    pattern:
+        console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+
+jwt:
+    signerKey: "8xkCElr4kjJbW35n8mVAWGsCVMRz68dF5S7hhFYzIP5CVYn+6k3QLIJ/O3C1KyvRoQJWXO012//d7Z5cvEy8bA=="

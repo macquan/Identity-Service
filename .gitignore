@@ -1,0 +1,56 @@
+HELP.md
+target/
+build/
+*.class
+*.jar
+*.war
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+                                                                                                                    
+### Environment & Secrets (Tránh lộ Key JWT / DB) ###
+.env
+.env.*
+application-local.yml
+application-local.properties
+application-secret.yml
+                                                                                                                    
+### Logs & Temp ###
+*.log
+logs/
+temp/
+                                                                                                                    
+### OS Generated Files (Windows & Mac) ###
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+.DS_Store
+                                                                                                                    
+### STS / Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+                                                                                                                    
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+                                                                                                                    
+### VS Code ###
+.vscode/
+                                                                                                                    
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
