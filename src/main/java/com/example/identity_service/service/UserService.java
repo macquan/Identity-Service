@@ -3,6 +3,9 @@ package com.example.identity_service.service;
 import java.util.HashSet;
 import java.util.List;
 
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +33,7 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public User createUser(UserCreationRequest request) {
+    public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTS);
         }
@@ -41,21 +44,38 @@ public class UserService {
         roles.add(Role.USER.name());
         user.setRoles(roles);
 
-        return userRepository.save(user);
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    public UserResponse getMyInfo() {
+        // Khi đăng nhập thành công, Spring Security sẽ lưu thông tin người dùng vào
+        // SecurityContextHolder.
+        var context = SecurityContextHolder.getContext();
+        context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(context.getAuthentication().getName())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return userMapper.toUserResponse(user);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')") // Kiểm tra quyền trước khi thực hiện method bên dưới, chỉ cho phép người dùng
+                                      // có quyền "ROLE_ADMIN" truy cập
     public List<UserResponse> getUsers() {
         return userMapper.toUserResponseList(
                 userRepository.findAll());
     }
 
+    @PostAuthorize("returnObject.username == authentication.name or hasRole('ADMIN')") // Thực hiện xong method bên dưới
+                                                                                       // thì mới kiểm tra quyền có phải
+                                                                                       // là ADMIN hay không,...
     public UserResponse getUserById(String userId) {
         return userMapper.toUserResponse(
-                userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found")));
+                userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         userMapper.updateUser(user, request);
         return userMapper.toUserResponse(userRepository.save(user));
     }
