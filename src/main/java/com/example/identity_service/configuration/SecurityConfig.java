@@ -8,10 +8,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+
+import com.example.identity_service.enums.Role;
 
 @Configuration
 @EnableWebSecurity
@@ -30,19 +36,28 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request
                 .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                .anyRequest().authenticated()); // Cho phép tất cả các yêu cầu POST đến endpoint /users, /auth/token,
-                                                // /auth/introspect mà không cần xác thực, trong khi yêu cầu khác cần
-                                                // xác thực
-
+                .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name()) // Chỉ cho phép người dùng có
+                                                                                      // quyền "ROLE_ADMIN" truy cập
+                                                                                      // endpoint GET /users
+                .anyRequest().authenticated());
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))); // Cấu hình để sử dụng JWT (JSON Web Token)
-                                                                             // làm phương thức xác thực cho các yêu cầu
-                                                                             // đến các endpoint khác ngoài
-                                                                             // PUBLIC_ENDPOINTS
+                .jwt(jwtConfigurer -> jwtConfigurer
+                        .decoder(jwtDecoder())
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter())));
 
         httpSecurity.csrf(csrf -> csrf.disable()); // Vô hiệu hóa CSRF (Cross-Site Request Forgery) để tránh các vấn đề
                                                    // liên quan đến bảo mật khi gửi yêu cầu từ các nguồn khác nhau
         return httpSecurity.build();
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthorityConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthorityConverter.setAuthorityPrefix("ROLE_"); // Thêm tiền tố "ROLE_" vào quyền được cấp từ JWT
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthorityConverter);
+        return jwtAuthenticationConverter;
     }
 
     @Bean
@@ -52,5 +67,10 @@ public class SecurityConfig {
                 .withSecretKey(secretKeySpec)
                 .macAlgorithm(MacAlgorithm.HS512)
                 .build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(10);
     }
 }

@@ -4,16 +4,19 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.StringJoiner;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.example.identity_service.dto.request.AuthenticationRequest;
 import com.example.identity_service.dto.request.IntrospectRequest;
 import com.example.identity_service.dto.response.AuthenticationResponse;
 import com.example.identity_service.dto.response.IntrospectResponse;
+import com.example.identity_service.entity.User;
 import com.example.identity_service.exception.AppException;
 import com.example.identity_service.exception.ErrorCode;
 import com.example.identity_service.repository.UserRepository;
@@ -73,7 +76,7 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
-        var token = generateToken(user.getUsername());
+        var token = generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(token)
@@ -81,7 +84,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    private String generateToken(String username) {
+    private String generateToken(User user) {
         // Một jwt token bao gồm 3 phần: header, payload và signature. Header chứa thông
         // tin về thuật toán mã hóa và loại token, payload chứa thông tin về người dùng
         // hoặc các dữ liệu khác liên quan đến phiên làm việc, và signature được tạo ra
@@ -89,13 +92,14 @@ public class AuthenticationService {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
+                .subject(user.getUsername()) // subject là thông tin định danh của người dùng, thường là username hoặc
+                                             // userId
                 .issuer("macquan8.com") // người phát hành token, có thể là tên miền hoặc tên ứng dụng
                 .issueTime(new Date()) // thời gian phát hành token
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli())) // thời gian hết hạn token, ở đây là 1
                                                                                  // giờ kể từ thời điểm phát hành
-                .claim("customClaim", "customValue")
+                .claim("scope", buildScope(user))
                 .build(); // claim là từng cặp key-value trong payload của JWT, chứa thông tin về người
                           // dùng hoặc các dữ liệu khác liên quan đến phiên làm việc.
 
@@ -114,6 +118,17 @@ public class AuthenticationService {
             log.error("Cannot create token", e);
             throw new RuntimeException("Error signing the JWT token", e);
         }
+    }
 
+    private String buildScope(User user) {
+        // Xây dựng chuỗi scope từ danh sách các vai trò của người dùng. Scope là một
+        // khái niệm trong OAuth 2.0, đại diện cho quyền truy cập mà người dùng được
+        // cấp cho ứng dụng.
+        StringJoiner stringJoiner = new StringJoiner(" "); // Các vai trò của người dùng sẽ được nối với nhau bằng dấu
+                                                           // cách.
+        if (!CollectionUtils.isEmpty(user.getRoles())) {
+            user.getRoles().forEach(stringJoiner::add); // Thêm từng vai trò vào StringJoiner
+        }
+        return stringJoiner.toString();
     }
 }
