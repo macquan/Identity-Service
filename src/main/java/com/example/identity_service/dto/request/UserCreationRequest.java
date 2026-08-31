@@ -5,10 +5,12 @@ import java.time.LocalDate;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor // Giúp tạo ra một constructor với tất cả các tham số, cần thiết cho việc
                     // khởi tạo đối tượng từ dữ liệu JSON
 @NoArgsConstructor // Giúp tạo ra một constructor không có tham số, cần thiết cho việc

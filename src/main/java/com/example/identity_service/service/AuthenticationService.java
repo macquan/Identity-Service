@@ -127,7 +127,14 @@ public class AuthenticationService {
         StringJoiner stringJoiner = new StringJoiner(" "); // Các vai trò của người dùng sẽ được nối với nhau bằng dấu
                                                            // cách.
         if (!CollectionUtils.isEmpty(user.getRoles())) {
-            user.getRoles().forEach(stringJoiner::add); // Thêm từng vai trò vào StringJoiner
+            user.getRoles().forEach(role -> {
+                stringJoiner.add("ROLE_" + role.getName());
+                if (!CollectionUtils.isEmpty(role.getPermissions())) {
+                    role.getPermissions().forEach(permission -> {
+                        stringJoiner.add(permission.getName());
+                    });
+                }
+            }); // Thêm từng vai trò vào StringJoiner
         }
         return stringJoiner.toString();
     }

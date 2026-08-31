@@ -1,14 +1,17 @@
 package com.example.identity_service.dto.request;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,4 +21,5 @@ public class UserUpdateRequest {
     private String firstName;
     private String lastName;
     private LocalDate dob;
+    private Set<String> roles;
 }

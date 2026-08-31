@@ -52,7 +52,7 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthorityConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthorityConverter.setAuthorityPrefix("ROLE_"); // Thêm tiền tố "ROLE_" vào quyền được cấp từ JWT
+        jwtGrantedAuthorityConverter.setAuthorityPrefix(""); // Thêm tiền tố "ROLE_" vào quyền được cấp từ JWT
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthorityConverter);

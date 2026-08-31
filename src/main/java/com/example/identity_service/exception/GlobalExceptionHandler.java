@@ -1,7 +1,5 @@
 package com.example.identity_service.exception;
 
-import java.text.ParseException;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,7 +7,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.example.identity_service.dto.response.ApiResponse;
-import com.nimbusds.jose.JOSEException;
 
 @ControllerAdvice // ControllerAdvice đại diện cho một lớp xử lý ngoại lệ toàn cục, giúp xử lý các
                   // ngoại lệ phát sinh trong ứng dụng và cung cấp phản hồi thích hợp cho người
@@ -59,24 +56,25 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
-    @ExceptionHandler(ParseException.class)
-    public ResponseEntity<ApiResponse> handlingParseException(ParseException ex) {
-        ErrorCode errorCode = ErrorCode.INVALID_TOKEN;
-        return ResponseEntity.status(errorCode.getStatusCode()).body(
-                ApiResponse.builder()
-                        .code(errorCode.getCode())
-                        .message(errorCode.getMessage())
-                        .build());
-    }
+    // @ExceptionHandler(ParseException.class)
+    // public ResponseEntity<ApiResponse> handlingParseException(ParseException ex)
+    // {
+    // ErrorCode errorCode = ErrorCode.INVALID_TOKEN;
+    // return ResponseEntity.status(errorCode.getStatusCode()).body(
+    // ApiResponse.builder()
+    // .code(errorCode.getCode())
+    // .message(errorCode.getMessage())
+    // .build());
+    // }
 
-    @ExceptionHandler(JOSEException.class)
+    // @ExceptionHandler(JOSEException.class)
 
-    public ResponseEntity<ApiResponse> handlingJOSEException(JOSEException ex) {
-        ErrorCode errorCode = ErrorCode.INVALID_SIGNATURE;
-        return ResponseEntity.status(errorCode.getStatusCode()).body(
-                ApiResponse.builder()
-                        .code(errorCode.getCode())
-                        .message(errorCode.getMessage())
-                        .build());
-    }
+    // public ResponseEntity<ApiResponse> handlingJOSEException(JOSEException ex) {
+    // ErrorCode errorCode = ErrorCode.INVALID_SIGNATURE;
+    // return ResponseEntity.status(errorCode.getStatusCode()).body(
+    // ApiResponse.builder()
+    // .code(errorCode.getCode())
+    // .message(errorCode.getMessage())
+    // .build());
+    // }
 }

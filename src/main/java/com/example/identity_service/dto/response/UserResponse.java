@@ -5,10 +5,12 @@ import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -18,5 +20,5 @@ public class UserResponse {
     private String firstName;
     private String lastName;
     private LocalDate dob; // date of birth
-    private Set<String> roles;
+    private Set<RoleResponse> roles;
 }

@@ -7,8 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.example.identity_service.entity.Role;
 import com.example.identity_service.entity.User;
-import com.example.identity_service.enums.Role;
+import com.example.identity_service.repository.RoleRepository;
 import com.example.identity_service.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,11 +24,17 @@ public class ApplicationInitConfig {
     private final PasswordEncoder passwordEncoder;
 
     @Bean
-    public ApplicationRunner applicationRunner(UserRepository userRepository) {
+    public ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository) {
         return args -> {
             if (userRepository.findByUsername("admin").isEmpty()) {
-                var roles = new HashSet<String>();
-                roles.add(Role.ADMIN.name());
+
+                Role adminRole = roleRepository.findByName("ADMIN").orElse(null);
+
+                var roles = new HashSet<Role>();
+                if (adminRole != null) {
+                    roles.add(adminRole);
+                }
+
                 User user = User.builder()
                         .username("admin")
                         .password(passwordEncoder.encode("admin"))
