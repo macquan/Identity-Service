@@ -35,16 +35,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request
-                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                // .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name()) // Chỉ
-                // cho phép người dùng có
-                // quyền "ROLE_ADMIN" truy cập
-                // endpoint GET /users
+                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll() // Cho phép truy cập công khai cho các
+                                                                                // endpoint POST được chỉ định
                 .anyRequest().authenticated());
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwtConfigurer -> jwtConfigurer
                         .decoder(jwtDecoder())
-                        .jwtAuthenticationConverter(jwtAuthenticationConverter())));
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
 
         httpSecurity.csrf(csrf -> csrf.disable()); // Vô hiệu hóa CSRF (Cross-Site Request Forgery) để tránh các vấn đề
                                                    // liên quan đến bảo mật khi gửi yêu cầu từ các nguồn khác nhau

@@ -3,6 +3,7 @@ package com.example.identity_service.exception;
 import java.text.ParseException;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,10 +17,12 @@ import com.nimbusds.jose.JOSEException;
 public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handlingException(Exception ex) {
-        ApiResponse apiResponse = new ApiResponse<>();
-        apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
-        apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
+        ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
+        return ResponseEntity.status(errorCode.getStatusCode()).body(
+                ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build());
     }
 
     @ExceptionHandler(AppException.class)
@@ -28,7 +31,18 @@ public class GlobalExceptionHandler {
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException ex) {
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+
+        return ResponseEntity.status(errorCode.getStatusCode()).body(
+                ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -47,17 +61,22 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ParseException.class)
     public ResponseEntity<ApiResponse> handlingParseException(ParseException ex) {
-        ApiResponse apiResponse = new ApiResponse<>();
-        apiResponse.setCode(ErrorCode.INVALID_TOKEN.getCode());
-        apiResponse.setMessage(ErrorCode.INVALID_TOKEN.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
+        ErrorCode errorCode = ErrorCode.INVALID_TOKEN;
+        return ResponseEntity.status(errorCode.getStatusCode()).body(
+                ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build());
     }
 
     @ExceptionHandler(JOSEException.class)
+
     public ResponseEntity<ApiResponse> handlingJOSEException(JOSEException ex) {
-        ApiResponse apiResponse = new ApiResponse<>();
-        apiResponse.setCode(ErrorCode.INVALID_SIGNATURE.getCode());
-        apiResponse.setMessage(ErrorCode.INVALID_SIGNATURE.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
+        ErrorCode errorCode = ErrorCode.INVALID_SIGNATURE;
+        return ResponseEntity.status(errorCode.getStatusCode()).body(
+                ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build());
     }
 }
