@@ -18,13 +18,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserUpdateRequest {
-    @Size(min = 8, message = "INVALID_PASSWORD")
+    @Size(min = 6, message = "INVALID_PASSWORD")
     private String password;
     private String firstName;
 
     private String lastName;
 
-    @DobConstraint(min = 50, message = "INVALID_DOB")
+    @DobConstraint(min = 16, message = "INVALID_DOB")
     private LocalDate dob;
 
     private Set<String> roles;

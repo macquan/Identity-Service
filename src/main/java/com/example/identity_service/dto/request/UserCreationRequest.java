@@ -19,16 +19,16 @@ import lombok.Setter;
                    // deserialization từ JSON
 @Builder
 public class UserCreationRequest {
-    @Size(min = 3, message = "USERNAME_INVALID")
+    @Size(min = 4, message = "USERNAME_INVALID")
     private String username;
 
-    @Size(min = 8, message = "INVALID_PASSWORD")
+    @Size(min = 6, message = "INVALID_PASSWORD")
     private String password;
 
     private String firstName;
     private String lastName;
 
-    @DobConstraint(min = 50, message = "INVALID_DOB")
+    @DobConstraint(min = 16, message = "INVALID_DOB")
     private LocalDate dob;
 
 }
