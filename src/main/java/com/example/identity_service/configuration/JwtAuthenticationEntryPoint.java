@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import tools.jackson.databind.ObjectMapper;
 
+// Giup xử lý các lỗi xác thực (authentication) trong ứng dụng Spring Security. Khi một yêu cầu không được xác thực, phương thức commence sẽ được gọi để trả về phản hồi lỗi thích hợp cho client.
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
