@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.identity_service.dto.request.AuthenticationRequest;
 import com.example.identity_service.dto.request.IntrospectRequest;
 import com.example.identity_service.dto.request.LogoutRequest;
+import com.example.identity_service.dto.request.RefreshTokenRequest;
 import com.example.identity_service.dto.response.ApiResponse;
 import com.example.identity_service.dto.response.AuthenticationResponse;
 import com.example.identity_service.dto.response.IntrospectResponse;
@@ -50,4 +51,12 @@ public class AuthenticationController {
         return ApiResponse.<Void>builder().build();
     }
 
+    @PostMapping("/refresh")
+    public ApiResponse<AuthenticationResponse> refreshToken(@RequestBody RefreshTokenRequest request)
+            throws JOSEException, ParseException {
+        var result = authenticationService.refreshToken(request);
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(result)
+                .build();
+    }
 }
